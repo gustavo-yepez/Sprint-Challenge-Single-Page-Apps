@@ -1,50 +1,44 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React, { useState,useEffect  } from "react";
 import CharacterCard from "./CharacterCard";
-import {Link} from "react-router-dom";
+
+export default function SearchForm({people}) {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchResults, setSearchResults] = useState({people});
 
 
 
-export default function SearchForm() {
+  useEffect(() => {
+    const results = people.filter(people => {
 
-  const [data, setData] = useState([]);
-  const [query, setQuery] = useState("");
+      return people.toLowerCase().includes(searchTerm.toLowerCase());
+    });
 
-useEffect(()=>{
-  axios.get("https://rickandmortyapi.com/api/character/")
-  .then (response =>{
-    const characters = response.data.results.filter(char =>
-    char.name.toLowerCase().includes(query.toLowerCase())
-    );
+    setSearchResults(results);
+  }, [searchTerm]);
 
-    setData (characters);
-  });
-},[query]);
+  const handleChange = event => {
+    setSearchTerm(event.target.value);
+  };
 
 
-const handleInputChange = event => {
-  setQuery(event.target.value);
-};
 return (
-  <div >
-    <form >
-      <input
-      id="name" type="text" name="textfield" placeholder="Search"
-      value={query} onChange={handleInputChange}/>
+  <section className="search-form">
+     // Add a search form here
+      <form>
+    <label htmlFor="name">Search:</label>
+        <input
+          id="name"
+          type="text"
+          name="textfield"
+          placeholder="Search"
+          value={searchTerm}
+          onChange={handleChange}
+        />
+      </form>
 
 
 
-    <Link to="/"><button>Home
-          </button></Link>
-    </form>
 
-    {data.map((char => {
-  return(
-  <CharacterCard key={char.id} name={char.name} species
-   ={char.species} status={char.status}/>)
+    </section>
+  );
 }
-))}
-
-
-</div>
-)} 

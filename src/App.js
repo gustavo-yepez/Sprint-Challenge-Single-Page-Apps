@@ -1,19 +1,31 @@
 import React from "react";
+import ReactDOM from "react-dom";
+import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import Header from "./components/Header.js";
-import {Route} from "react-router-dom";
-import WelcomePage from "./components/WelcomePage";
-import CharacterList from "./components/CharacterList";
-import Character from "./components/CharacterCard";
-import SearchForm from "./components/SearchForm";
 
+
+import WelcomePage from "./components/WelcomePage";
+import CharacterList from "./components/CharacterList.js";
+import CharacterCard from "./components/CharacterCard.js";
+import SearchForm from "./components/SearchForm";
 export default function App() {
   return (
     <main>
       <Header />
-      <SearchForm />
-      <Route exact path="/" component={WelcomePage} />
-      <Route exact path="/list" component={CharacterList} />
-      <Route path='/results/:id' component={Character} />
+       <div className="nav-links">
+        <nav>
+        <Link to="/">Home</Link>
+        <br></br>
+        <Link to="/Character/:id">Characters</Link>
+        </nav>
+        </div>
+        <Route path = "/Character/:id" 
+          component={CharacterList}
+        render= {routeProps => {
+          console.log("routeProps", routeProps);
+        }}  
+      />
+        <Route path= "/" exact component={WelcomePage} />,
     </main>
   );
 }

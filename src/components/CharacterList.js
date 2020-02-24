@@ -2,31 +2,68 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import CharacterCard from './CharacterCard';
 
-const Character = (props) => {
-  const [char, setChar] = useState();
+export default function CharacterList() {
+  // TODO: Add useState to track data from useEffect
+  const initialState = [];
+  const [PersonData, setPersonData] = useState(initialState);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchResults, setSearchResults] = useState(PersonData);
+
+  useEffect(() => {
+    const results = PersonData.filter(people => {
+      // if character (param) has a part of the searchTerm
+      return people.id.toLowerCase().includes(searchTerm.toLowerCase());
+    });
+
+    setSearchResults(results);
+  }, [searchTerm]);
+
+  const handleChange = event => {
+    setSearchTerm(event.target.value);
+  };
 
 
   useEffect(() => {
-    const id = props.match.params.id;
+    console.log('calling api');
+    axios
+    .get(`https://rickandmortyapi.com/api/character/`)
+    .then(response => {
+      console.log("response from api",response);
+      setPersonData(response.data.results);
+  })
+  .catch(error => console.log(error));
+    // TODO: Add API Request here - must run in `useEffect`
+    //  Important: verify the 2nd `useEffect` parameter: the dependancies array!
+  }, []);
 
-       axios
-        .get(`https://rickandmortyapi.com/api/character/${id}`)
-        .then(response => {
-          setChar(response.data);
-        })
-        .catch(err => { 
-          console.error(err);
-        });
-
-  },[props.match.params.id]);
-
-  if (!char) {
-    return <div>Loading character information...</div>;
-  }
+  console.log('initial render of PersonData', PersonData);
 
   return (
-    <CharacterCard character={char} />
-  );
-}
+    <section className="character-list">
 
-export default Character;
+  <div className="searchFrom">
+  <form>
+  <label htmlFor="name">Search:</label>
+          <input
+            id="name"
+            type="text"
+            name="textfield"
+            placeholder="Search"
+            value={searchTerm}
+            onChange={handleChange}
+            />
+        <div className="character-list">
+          <ul>
+            {searchResults.map(people => {
+              return <li key={people}>{people}</li>;
+            })}
+          </ul>
+        </div>
+  </form>
+  </div>
+  {PersonData.map(people =>{
+        return <CharacterCard people={people} key={people.id}/>
+    })};
+  </section>
+    );
+}
